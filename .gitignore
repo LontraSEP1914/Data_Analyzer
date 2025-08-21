@@ -1,0 +1,12 @@
+# Ignora o ambiente virtual
+.venv/
+venv/
+
+# Ignora arquivos de cache
+__pycache__/
+
+# Ignora arquivos de saída gerados pela aplicação
+*.xlsx
+*.xls
+*.csv
+*.parquet
