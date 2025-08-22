@@ -10,16 +10,22 @@ class MainWindow(QMainWindow):
         super().__init__()
 
         self.setWindowTitle("Analisador de Dados Corporativo")
-        self.setGeometry(100, 100, 800, 600)
+        self.setGeometry(100, 100, 1000, 700) # Aumenta o tamanho da janela para o novo layout
 
         # Widget Central e Layout Principal
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
         main_layout = QVBoxLayout(central_widget)
 
-        # --- Seção de Seleção de Arquivos ---
-        file_selection_layout = QHBoxLayout()
+        # Layout para os dois painéis principais (entrada e log)
+        content_layout = QHBoxLayout()
 
+        # --- Painel Esquerdo (Controles de Entrada) ---
+        input_panel_layout = QVBoxLayout()
+        input_panel_layout.setContentsMargins(10, 10, 10, 10)
+        
+        # Seção de Seleção de Arquivos
+        file_selection_layout = QHBoxLayout()
         # Arquivo A
         file_a_layout = QVBoxLayout()
         self.label_a = QLabel("Arquivo A:")
@@ -29,7 +35,6 @@ class MainWindow(QMainWindow):
         file_a_layout.addWidget(self.label_a)
         file_a_layout.addWidget(self.path_a_line)
         file_a_layout.addWidget(self.btn_browse_a)
-
         # Arquivo B
         file_b_layout = QVBoxLayout()
         self.label_b = QLabel("Arquivo B:")
@@ -42,15 +47,13 @@ class MainWindow(QMainWindow):
 
         file_selection_layout.addLayout(file_a_layout)
         file_selection_layout.addLayout(file_b_layout)
-        main_layout.addLayout(file_selection_layout)
+        input_panel_layout.addLayout(file_selection_layout)
 
-        # --- Seção de Parâmetros ---
+        # Seção de Parâmetros
         params_layout = QVBoxLayout()
         self.label_keys = QLabel("Colunas-Chave (separadas por vírgula):")
         self.keys_line = QLineEdit()
         self.keys_line.setPlaceholderText("Ex: ID_Produto, Cod_Cliente")
-        
-        # Adicionaremos o campo para colunas de valor do confronto aqui
         self.label_values = QLabel("Colunas de Valor para Confronto (separadas por vírgula):")
         self.values_line = QLineEdit()
         self.values_line.setPlaceholderText("Ex: Vendas, Estoque")
@@ -59,24 +62,40 @@ class MainWindow(QMainWindow):
         params_layout.addWidget(self.keys_line)
         params_layout.addWidget(self.label_values)
         params_layout.addWidget(self.values_line)
-        main_layout.addLayout(params_layout)
+        input_panel_layout.addLayout(params_layout)
+        input_panel_layout.addStretch() # Adiciona um espaçador para empurrar os widgets para o topo
 
-        # --- Seção de Ações ---
+        content_layout.addLayout(input_panel_layout, 1) # Define o painel de entrada com peso 1
+
+        # --- Painel de Ações e Log ---
+        output_panel_layout = QVBoxLayout()
+        output_panel_layout.setContentsMargins(10, 10, 10, 10)
+
+        # Seção de Ações
         actions_layout = QHBoxLayout()
         self.btn_cruzamento = QPushButton("Realizar Cruzamento")
         self.btn_confronto = QPushButton("Realizar Confronto")
         actions_layout.addWidget(self.btn_cruzamento)
         actions_layout.addWidget(self.btn_confronto)
-        main_layout.addLayout(actions_layout)
+        
+        # Log Console
+        self.log_console = QTextEdit()
+        self.log_console.setReadOnly(True)
+        self.log_console.setPlaceholderText("Console de Log...")
 
-        # --- Seção de Progresso e Log ---
+        output_panel_layout.addLayout(actions_layout)
+        output_panel_layout.addWidget(QLabel("Console de Log:"))
+        output_panel_layout.addWidget(self.log_console)
+
+        content_layout.addLayout(output_panel_layout, 2) # Define o painel de saída com peso 2
+
+        # Adiciona os painéis ao layout principal
+        main_layout.addLayout(content_layout)
+
+        # --- Seção de Progresso ---
         self.progress_bar = QProgressBar()
         self.progress_bar.setValue(0)
-        self.log_console = QTextEdit()
-        self.log_console.setReadOnly(True) # Apenas para exibir informações
-
         main_layout.addWidget(self.progress_bar)
-        main_layout.addWidget(self.log_console)
 
         # --- Conectar Sinais e Slots (eventos) ---
         self.btn_browse_a.clicked.connect(lambda: self.browse_file(self.path_a_line))
